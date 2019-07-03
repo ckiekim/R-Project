@@ -21,12 +21,20 @@ mail_texts <- remDr$findElement(using="id", value="list_for_view")
                             # (using = 'css selector', "subject")
 mail_texts
 mail_texts <- mail_texts$getElementText()
-tmp <- str_split(mail_texts, '\n') %>% [[1]]
+tmp <- str_split(mail_texts, '\n') %>% .[[1]]
 
+sender <- c()
+subject <- c()
+time <- c()
 for (i in 1:20) {
-  
+  sender <- c(sender, tmp[4*i-3])
+  subject <- c(subject, tmp[4*i-2])
+  time <- c(time, tmp[4*i-1])
 }
+df_mail <- data.frame(sender=sender, subject=subject, time=time)
+df_mail
+remDr$close()
+
 #subjects<-unlist(lapply(mail_subjects, function(x){x$getElementText()}))
 #subjects
 
-remDr$close()
