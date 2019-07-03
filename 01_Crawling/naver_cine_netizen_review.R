@@ -1,4 +1,4 @@
-# NAVER 영화('알라딘') 일반인 리뷰 크롤링
+# NAVER 영화('알라딘') 네티즌 리뷰 크롤링
 library(rvest)
 library(stringr)
 library(dplyr)
@@ -39,5 +39,5 @@ for (li in lis) {
   #print(time)
 }
 
-review = data.frame(score=score, review=review, writer=writer, time=time)
+review <- data.frame(score=score, review=review, writer=writer, time=time)
 review
