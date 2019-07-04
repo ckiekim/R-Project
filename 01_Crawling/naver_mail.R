@@ -8,7 +8,7 @@ remDr<-remoteDriver(remoteServerAddr="localhost", port=4445L, browserName="chrom
 remDr$open()
 
 remDr$navigate("https://nid.naver.com/nidlogin.login")
-txt_id <- remDr$findElement(using="id", value="id")
+txt_id <- remDr$findElement(using="css selector", '#id')
 txt_pw <- remDr$findElement(using="id", value="pw")
 login_btn <- remDr$findElement(using="class", value="btn_global")
 
@@ -18,7 +18,6 @@ login_btn$clickElement()
 
 remDr$navigate("https://mail.naver.com/")
 mail_texts <- remDr$findElement(using="id", value="list_for_view")
-                            # (using = 'css selector', "subject")
 mail_texts
 mail_texts <- mail_texts$getElementText()
 tmp <- str_split(mail_texts, '\n') %>% .[[1]]
