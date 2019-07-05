@@ -1,6 +1,7 @@
 # Google에 로그인한 후 gmail 가져오기
 library(RSelenium)
 library(rvest)
+library(dplyr)
 library(stringr)
 trim <- function(x) gsub("^\\s+|\\s+$", "", x)
 
@@ -33,11 +34,11 @@ for (tr in trs) {
     html_node('td.yX.xY') %>%
     html_node('div') %>%
     html_nodes('span') -> spans
-  len <- length(spans)
-  sender <- c(sender, html_text(spans[1]))       # Sender
-  subject <- c(subject, html_text(spans[len-1]))     # Subject
-  time <- c(time, html_text(spans[len]))           # Time
   
+  len <- length(spans)
+  sender <- c(sender, html_text(spans[1]))        # Sender
+  subject <- c(subject, html_text(spans[len-1]))  # Subject
+  time <- c(time, html_text(spans[len]))          # Time
 }
 df_mail <- data.frame(sender=sender, subject=subject, time=time)
 df_mail
