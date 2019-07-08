@@ -66,6 +66,6 @@ for (i in 1:total_page) {
   points <- data.frame(score=score, review=review, writer=writer, time=time)
   df_points <- rbind.data.frame(df_points, points)
 }
-write.xlsx(df_points, file="D:/Workspace/R_Project/01_Crawling/cine.xlsx", 
+write.xlsx(df_points, file="D:/Workspace/R_Project/01_Crawling/aladdin.xlsx", 
            sheetName="네티즌평점", 
            col.names=TRUE, row.names=FALSE, append=FALSE)
