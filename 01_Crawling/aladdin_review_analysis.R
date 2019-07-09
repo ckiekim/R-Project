@@ -13,6 +13,7 @@ library(wordcloud)
 library(wordcloud2)
 library(ggplot2)
 library(gridExtra)
+library(lubridate)
 library(extrafont)
 windowsFonts(myfont = "맑은 고딕")
 theme_update(text=element_text(family="myfont"))
@@ -64,18 +65,19 @@ wordcloud(names(wordcount), freq=wordcount,
           random.color = T, colors = palete, family="myfont")
 
 wordcount_top <- head(sort(wordcount, decreasing = T), 300)
-wordcloud2(wordcount_top, size=0.9, col="random-light", 
-           backgroundColor="black")
+wordcloud2(wordcount_top, size=2, col="random-light", 
+           backgroundColor="black", shape='circle')
 
 # 2. 평점 분석하기
 tmp <- strptime(df_aladdin$time, '%Y.%m.%d')
 df_aladdin$date <- as.character(tmp)
 df_aladdin$hour <- as.character(strptime(df_aladdin$time, "%Y.%m.%d %H"))
 df_aladdin$score <- as.numeric(as.character(df_aladdin$score))
-head(aladdin)
+df_aladdin$weekday <- wday(as.Date(tmp), label=T)
+head(df_aladdin)
 
 # 2019년 5/23 ~ 7/7 까지 평점 변화
-# 평점 갯수
+# 일별 평점 갯수
 df_aladdin <- filter(df_aladdin, date !='2019-07-08')
 df_aladdin$date <- str_sub(df_aladdin$date, 6)
 count_review <- df_aladdin %>%
@@ -83,25 +85,57 @@ count_review <- df_aladdin %>%
   tally()
 count_score_plot <- ggplot(data=count_review,
                            aes(x=date, y=n, group=1)) +
-  geom_line(color = 'red') +
+  geom_bar(stat="identity", fill=rainbow(46)) +
   ggtitle('일별 평점 갯수 추이') +
   theme(panel.grid.major = element_blank(),
         panel.grid.minor = element_blank(),
         axis.text.x = element_text(angle=45, hjust=1, vjust=1),
-        plot.title = element_text(face = 'bold', size = 15, vjust=2))
+        plot.title = element_text(face = 'bold', size = 15, 
+                                  vjust=2, hjust=0.5))
 
-# 평점 평균
+# 일별 평점 평균
 mean_score <- df_aladdin %>%
   group_by(date) %>%
   summarise(mean_point = mean(score, na.rm = T))
 mean_score_plot <- ggplot(data=mean_score,
                           aes(x=date, y=mean_point, group=1)) +
-  geom_line(color = 'red')+
-  ggtitle('일별 평점 평균 추이')+
+  geom_line(color = 'red') +
+  ggtitle('일별 평점 평균 추이') +
   theme(panel.grid.major = element_blank(),
         panel.grid.minor = element_blank(),
         axis.text.x = element_text(angle=45, hjust=1, vjust=1),
-        plot.title = element_text(face = 'bold', size = 15, vjust=2))
+        plot.title = element_text(face = 'bold', size = 15, 
+                                  vjust=2, hjust=0.5))
 
-grid.arrange(mean_score_plot,count_score_plot)
+grid.arrange(count_score_plot, mean_score_plot)
 
+# 시간대별 평점 갯수
+df_aladdin$hour <- str_sub(df_aladdin$hour, 12, 13)
+count_hour <- df_aladdin %>%
+  group_by(hour) %>%
+  tally()
+count_hour_plot <- ggplot(data=count_hour,
+                           aes(x=hour, y=n, group=1)) +
+  geom_bar(stat="identity", fill=rainbow(24)) +
+  ggtitle('시간대별 평점 갯수 추이') +
+  theme(panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank(),
+        axis.text.x = element_text(angle=45, hjust=1, vjust=1),
+        plot.title = element_text(face = 'bold', size = 15, 
+                                  vjust=2, hjust=0.5))
+
+# 시간대별 평점 평균
+mean_hour <- df_aladdin %>%
+  group_by(hour) %>%
+  summarise(mean_hour = mean(score, na.rm = T))
+mean_hour_plot <- ggplot(data=mean_hour,
+                          aes(x=hour, y=mean_hour, group=1)) +
+  geom_line(color = 'red') +
+  ggtitle('시간대별 평점 평균 추이') +
+  theme(panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank(),
+        axis.text.x = element_text(angle=45, hjust=1, vjust=1),
+        plot.title = element_text(face = 'bold', size = 15, 
+                                  vjust=2, hjust=0.5))
+
+grid.arrange(count_hour_plot, mean_hour_plot)
