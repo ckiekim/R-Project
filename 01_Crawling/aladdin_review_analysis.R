@@ -56,16 +56,16 @@ reviews <- read.table("aladdin_words.txt")
 wordcount <- table(reviews)
 head(sort(wordcount, decreasing = T), 30)
 
-set.seed(123)
 palete <- brewer.pal(12, 'Paired')
 par(mai=rep(0,4))
+set.seed(123)
 wordcloud(names(wordcount), freq=wordcount, 
           scale = c(5,0.3), rot.per = 0.1,
           min.freq = 20, random.order = F, 
           random.color = T, colors = palete, family="myfont")
 
-wordcount_top <- head(sort(wordcount, decreasing = T), 300)
-wordcloud2(wordcount_top, size=2, col="random-light", 
+wordcount_top <- head(sort(wordcount, decreasing = T), 200)
+wordcloud2(wordcount_top, size=1, col="random-light", 
            backgroundColor="black", shape='circle')
 
 # 2. 평점 분석하기
@@ -73,8 +73,7 @@ tmp <- strptime(df_aladdin$time, '%Y.%m.%d')
 df_aladdin$date <- as.character(tmp)
 df_aladdin$hour <- as.character(strptime(df_aladdin$time, "%Y.%m.%d %H"))
 df_aladdin$score <- as.numeric(as.character(df_aladdin$score))
-df_aladdin$weekday <- wday(as.Date(tmp), label=T)
-head(df_aladdin)
+str(df_aladdin)
 
 # 2019년 5/23 ~ 7/7 까지 평점 변화
 # 일별 평점 갯수
@@ -82,10 +81,18 @@ df_aladdin <- filter(df_aladdin, date !='2019-07-08')
 df_aladdin$date <- str_sub(df_aladdin$date, 6)
 count_review <- df_aladdin %>%
   group_by(date) %>%
-  tally()
+  summarise(n=n()) %>%
+  mutate(weekday = wday(as.Date(paste0("2019-", date)), label=T),
+         group=ifelse(weekday %in% c('토','일'), '공휴일', '근무일'))
+
+holidays <- c('01-01','03-01','05-05','06-06','08-15','10-03','10-09','12-25')
+luna_holidays <- c('02-04','02-05','02-06','05-06','09-12','09-13')
+count_review$group[count_review$date %in% holidays] <- '공휴일'
+count_review$group[count_review$date %in% luna_holidays] <- '공휴일'
+
 count_score_plot <- ggplot(data=count_review,
-                           aes(x=date, y=n, group=1)) +
-  geom_bar(stat="identity", fill=rainbow(46)) +
+                           aes(x=date, y=n, group=1, fill=group)) +
+  geom_bar(stat="identity", show.legend=F) +
   ggtitle('일별 평점 갯수 추이') +
   theme(panel.grid.major = element_blank(),
         panel.grid.minor = element_blank(),
