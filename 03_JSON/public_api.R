@@ -3,7 +3,7 @@
 library(jsonlite)
 
 base_url <- "http://apis.data.go.kr/B552061/frequentzoneLg/getRestFrequentzoneLg"
-ServiceKey <- '7t1%2BJu7GtCa%2BLEPxtUypI5MoMfYEvnA77nfvT%2FA3snI9YBNqDRmfdsuYAh5kAxsXae1vs%2FX9WdowCCoQHbuJwQ%3D%3D'
+ServiceKey <- 'ServiceKey_from_PublicDataPortal'
 searchYearCd <- 2017
 siDo <- 30    # 대전광역시
 guGun <- 170  # 서구
@@ -29,6 +29,10 @@ write.csv(df_accidents[-13], '사고다발지역.csv')
 
 geoms <- df_accidents$geom_json
 str(geoms)
+# g1<-fromJSON(geoms[1])
+# str(g1)
+# str(g1$coordinates[1,,])
+# write.csv(g1$coordinates[1,,], "poly.csv")
 
 library(openxlsx)
 wb <- createWorkbook()

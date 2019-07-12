@@ -9,7 +9,7 @@ str(wiki_person)
 class(wiki_person)
 
 # sample.json
-data <- fromJSON('sample_json.txt')    # JSON 파일 읽기
+data <- fromJSON('sample.json')    # JSON 파일 읽기
 str(data)
 
 data <- as.data.frame(data)     # Data Frame으로 변환
